@@ -1,12 +1,13 @@
 import pyodbc
 
 # Set up the SQL Server connection (replace with your actual connection details)
+# use it while using SSMS
 conn = pyodbc.connect(
     'DRIVER={ODBC Driver 17 for SQL Server};'
-    'SERVER=JASLEEN;'
-    'DATABASE=Northwind;'
-    'UID=JASLEEN\\ASUS;'
-    'PWD=Jasleen@2002;'
+    'SERVER=your_server_name;'
+    'DATABASE=database_name;'
+    'UID=your_username;'
+    'PWD=your_password;'
     'Trusted_Connection=yes;'
 )
 
@@ -55,7 +56,23 @@ predefined_queries = {
     "count regions": "SELECT COUNT(*) AS TotalCount FROM Region",
     "count customer demographics": "SELECT COUNT(*) AS TotalCount FROM CustomerDemographics",
     "count employee territories": "SELECT COUNT(*) AS TotalCount FROM EmployeeTerritories",
-    "count customer customer demo": "SELECT COUNT(*) AS TotalCount FROM CustomerCustomerDemo"
+    "count customer customer demo": "SELECT COUNT(*) AS TotalCount FROM CustomerCustomerDemo",
+    "ten most expensive products": "SELECT TOP 10 ProductName, UnitPrice FROM Products ORDER BY UnitPrice DESC",
+    "orders by customer": "SELECT * FROM Orders WHERE CustomerID = 'ALFKI'",  # Example CustomerID
+    "products in category": "SELECT * FROM Products WHERE CategoryID = 1",  # Example CategoryID
+    "sales by employee": "SELECT Employees.LastName, Employees.FirstName, Orders.OrderID, Orders.OrderDate, [Order Details].UnitPrice * [Order Details].Quantity AS SaleAmount FROM Orders INNER JOIN [Order Details] ON Orders.OrderID = [Order Details].OrderID INNER JOIN Employees ON Orders.EmployeeID = Employees.EmployeeID ORDER BY Employees.LastName, Employees.FirstName",
+    "total sales by employee": "SELECT Employees.LastName, Employees.FirstName, SUM([Order Details].UnitPrice * [Order Details].Quantity) AS TotalSales FROM Orders INNER JOIN [Order Details] ON Orders.OrderID = [Order Details].OrderID INNER JOIN Employees ON Orders.EmployeeID = Employees.EmployeeID GROUP BY Employees.LastName, Employees.FirstName ORDER BY TotalSales DESC",
+    "total sales by customer": "SELECT Customers.CompanyName, SUM([Order Details].UnitPrice * [Order Details].Quantity) AS TotalSales FROM Orders INNER JOIN [Order Details] ON Orders.OrderID = [Order Details].OrderID INNER JOIN Customers ON Orders.CustomerID = Customers.CustomerID GROUP BY Customers.CompanyName ORDER BY TotalSales DESC",
+    "products by supplier": "SELECT Suppliers.CompanyName, Products.ProductName FROM Products INNER JOIN Suppliers ON Products.SupplierID = Suppliers.SupplierID ORDER BY Suppliers.CompanyName",
+    "orders in date range": "SELECT * FROM Orders WHERE OrderDate BETWEEN '1997-01-01' AND '1997-12-31'",  # Example date range
+    "employees in region": "SELECT * FROM Employees WHERE Region = 'WA'",  # Example region
+    "average unit price by category": "SELECT Categories.CategoryName, AVG(Products.UnitPrice) AS AvgUnitPrice FROM Products INNER JOIN Categories ON Products.CategoryID = Categories.CategoryID GROUP BY Categories.CategoryName",
+    "max unit price by category": "SELECT Categories.CategoryName, MAX(Products.UnitPrice) AS MaxUnitPrice FROM Products INNER JOIN Categories ON Products.CategoryID = Categories.CategoryID GROUP BY Categories.CategoryName",
+    "min unit price by category": "SELECT Categories.CategoryName, MIN(Products.UnitPrice) AS MinUnitPrice FROM Products INNER JOIN Categories ON Products.CategoryID = Categories.CategoryID GROUP BY Categories.CategoryName",
+    "total quantity by product": "SELECT Products.ProductName, SUM([Order Details].Quantity) AS TotalQuantity FROM [Order Details] INNER JOIN Products ON [Order Details].ProductID = Products.ProductID GROUP BY Products.ProductName",
+    "average discount by product": "SELECT Products.ProductName, AVG([Order Details].Discount) AS AvgDiscount FROM [Order Details] INNER JOIN Products ON [Order Details].ProductID = Products.ProductID GROUP BY Products.ProductName",
+    "max discount by product": "SELECT Products.ProductName, MAX([Order Details].Discount) AS MaxDiscount FROM [Order Details] INNER JOIN Products ON [Order Details].ProductID = Products.ProductID GROUP BY Products.ProductName",
+    "min discount by product": "SELECT Products.ProductName, MIN([Order Details].Discount) AS MinDiscount FROM [Order Details] INNER JOIN Products ON [Order Details].ProductID = Products.ProductID GROUP BY Products.ProductName"
 }
 
 def query_database(sql_query):
